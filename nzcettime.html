@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CET to NZ Time Converter</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cetTimes = ["08:00 PM", "10:00 PM", "12:00 AM", "02:00 AM", "04:00 AM"];
+
+            const tableBody = document.getElementById('time-table-body');
+
+            const timePeriods = [
+                { period: "Last Sunday in October - Last Sunday in March", difference: 12 },
+                { period: "Last Sunday in March - First Sunday in April", difference: 11 },
+                { period: "First Sunday in April - Last Sunday in September", difference: 10 },
+                { period: "Last Sunday in September - Last Sunday in October", difference: 11 }
+            ];
+
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+
+            timePeriods.forEach(period => {
+                cetTimes.forEach(cetTime => {
+                    const [hours, minutes, periodIndicator] = cetTime.match(/(\d+):(\d+) (AM|PM)/).slice(1);
+                    let cetTodayDate = new Date(today);
+                    cetTodayDate.setHours(periodIndicator === 'PM' ? parseInt(hours) + 12 : parseInt(hours));
+                    cetTodayDate.setMinutes(parseInt(minutes));
+
+                    let nzTodayDate = new Date(cetTodayDate);
+                    nzTodayDate.setHours(cetTodayDate.getHours() + period.difference);
+
+                    let cetTomorrowDate = new Date(tomorrow);
+                    cetTomorrowDate.setHours(periodIndicator === 'PM' ? parseInt(hours) + 12 : parseInt(hours));
+                    cetTomorrowDate.setMinutes(parseInt(minutes));
+
+                    let nzTomorrowDate = new Date(cetTomorrowDate);
+                    nzTomorrowDate.setHours(cetTomorrowDate.getHours() + period.difference);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${cetTime}</td>
+                        <td>${nzTodayDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</td>
+                        <td>${nzTomorrowDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</td>
+                        <td>${period.period}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h2>CET to NZ Time Conversion for Today and Tomorrow</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>CET Time</th>
+                <th>NZ Time (Today)</th>
+                <th>NZ Time (Tomorrow)</th>
+                <th>Period</th>
+            </tr>
+        </thead>
+        <tbody id="time-table-body">
+        </tbody>
+    </table>
+</body>
+</html>
